@@ -20,6 +20,7 @@ class Command(BaseCommand):
         app = options['app']
         
         if options['previous-migration']:
+            # Ignore what is in git just go back to previous migration
             self.stdout.write(self.style.SUCCESS(f"Attempting to go back to roll back {app} to previous migration"))
             
             previous_migration = get_previous_migration(app=options["app"])
@@ -32,10 +33,9 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f"Attempting to go back to roll back {app} to latest migration on branch {branch}"))
         
         latest_migration_in_git = get_latest_migration_in_git(app=options["app"], branch=options["branch"])
-
-        # rollback(app=options["app"], migration=latest_migration_in_git)
+        rollback(app=options["app"], migration=latest_migration_in_git)
         
-        self.stdout.write(self.style.SUCCESS(f"Successfully rolled back to {previous_migration}"))
+        self.stdout.write(self.style.SUCCESS(f"Successfully rolled back to {latest_migration_in_git}"))
             
         
 

@@ -13,7 +13,10 @@ class Command(BaseCommand):
         
         self.stdout.write(self.style.SUCCESS(f"Attempting to go back to roll back {app} to previous migration"))
         
-        previous_migration = get_previous_migration(app_name=app)
+        if not (previous_migration := get_previous_migration(app_name=app)):
+            self.stdout.write(self.style.ERROR(f"Unable to rollback {app} to previous migration since no migration was found."))
+            return
+
         rollback(app_name=app, migration=previous_migration)
         
         self.stdout.write(self.style.SUCCESS(f"Successfully rolled back to {previous_migration}"))

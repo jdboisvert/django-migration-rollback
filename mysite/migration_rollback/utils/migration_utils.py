@@ -12,13 +12,10 @@ def get_latest_migration_in_git(app_name: str, branch_name: str):
 
 def get_previous_migration(app_name: str):
     """ Get the previously applied migration """
-    # TODO test in a Django app
     command = f"python manage.py showmigrations {app_name} | sort -r | grep '\[X\]' | head -2 | tail -1 | cut -d ' ' -f 3"
     command_pipe = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
     mirgration = command_pipe.stdout.read().decode("utf-8")
-    
-    print(mirgration)
-    
+        
     return mirgration
     
 def rollback(app_name: str, migration: str):

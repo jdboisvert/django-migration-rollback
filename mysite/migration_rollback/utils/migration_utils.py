@@ -15,6 +15,8 @@ def get_previous_migration(app_name: str):
     command_pipe = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
     mirgration = command_pipe.stdout.read().decode("utf-8")
     
+    print(mirgration)
+    
     return mirgration
     
 def rollback(app_name: str, migration: str):

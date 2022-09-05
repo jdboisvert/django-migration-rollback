@@ -6,8 +6,6 @@ def get_latest_migration_in_git(app_name: str, branch_name: str):
     command_pipe = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
     migration_number = command_pipe.stdout.read().decode("utf-8").split("_")[0]
     
-    print(migration_number)
-
     return migration_number
 
 def get_previous_migration(app_name: str):

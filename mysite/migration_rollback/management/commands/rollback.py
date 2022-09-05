@@ -24,7 +24,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f"Attempting to go back to roll back {app} to latest migration on branch {branch}"))
         
         latest_migration_in_git = get_latest_migration_in_git(app_name=app, branch_name=branch)
-        rollback(app=app, migration=latest_migration_in_git)
+        rollback(app_name=app, migration=latest_migration_in_git)
         
         self.stdout.write(self.style.SUCCESS(f"Successfully rolled back to {latest_migration_in_git}"))
             

@@ -23,17 +23,17 @@ class Command(BaseCommand):
             # Ignore what is in git just go back to previous migration
             self.stdout.write(self.style.SUCCESS(f"Attempting to go back to roll back {app} to previous migration"))
             
-            previous_migration = get_previous_migration(app=options["app"])
+            previous_migration = get_previous_migration(app=app)
 
-            rollback(app=options["app"], migration=previous_migration)
+            rollback(app=app, migration=previous_migration)
             
             self.stdout.write(self.style.SUCCESS(f"Successfully rolled back to {previous_migration}"))
         
         branch = options["branch"]
         self.stdout.write(self.style.SUCCESS(f"Attempting to go back to roll back {app} to latest migration on branch {branch}"))
         
-        latest_migration_in_git = get_latest_migration_in_git(app=options["app"], branch=options["branch"])
-        rollback(app=options["app"], migration=latest_migration_in_git)
+        latest_migration_in_git = get_latest_migration_in_git(app=app, branch=branch)
+        rollback(app=app, migration=latest_migration_in_git)
         
         self.stdout.write(self.style.SUCCESS(f"Successfully rolled back to {latest_migration_in_git}"))
             

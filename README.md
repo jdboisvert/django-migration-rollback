@@ -15,16 +15,13 @@ Able to set which branch in a git repository to rollback to using the custom com
 
 ### rollback_local
     ❯ python manage.py rollback_local -a polls 
-    
+
 * An app must be specified via the `-a` to indicate which app you wish to rollback. 
 * This will simply migrate back to the previous migration.
 
 ## Installing
 ### From GitHub
     ❯ pip install git+ssh://git@github.com/jdboisvert/django-migration-rollback
-
-### From [PyPI](https://pypi.org/project/mighty-bedmas-calculator/2022.7.26.0/#description)
-    ❯ pip install mighty-bedmas-calculator==2022.7.26.0
 
 ### Quick start 
 Add "migration_rollback" to your INSTALLED_APPS in the `settings.py` like this:

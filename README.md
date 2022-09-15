@@ -9,13 +9,15 @@ Able to set which branch in a git repository to rollback to using the custom com
 
 ### rollback command
     ❯ python manage.py rollback -a polls -b feature/really-cool-feature
-    * By default if no argument is specified for the branch `main` will be used. The arguemnt is specified via `-b`.
-    * An app must be specified via the `-a` to indicate which app you wish to rollback. 
+
+* By default if no argument is specified for the branch `main` will be used. The arguemnt is specified via `-b`.
+* An app must be specified via the `-a` to indicate which app you wish to rollback. 
 
 ### rollback_local
     ❯ python manage.py rollback_local -a polls 
-    * An app must be specified via the `-a` to indicate which app you wish to rollback. 
-    * This will simply migrate back to the previous migration.
+    
+* An app must be specified via the `-a` to indicate which app you wish to rollback. 
+* This will simply migrate back to the previous migration.
 
 ## Installing
 ### From GitHub

@@ -18,7 +18,6 @@ def get_previous_migration(app_name: str) -> str:
     
 def rollback(app_name: str, migration: str) -> None:
     """ Migrate a given app to the given migration """
-    # TODO How do I ensure this ran successfully?
     command = f"python manage.py migrate {app_name} {migration}"
     command_pipe = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
     command_pipe.stdout.read().decode("utf-8")

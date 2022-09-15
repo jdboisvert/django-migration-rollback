@@ -8,14 +8,14 @@ A Django package used to just make the `python manage.py migrate` a little easie
 Able to set which branch in a git repository to rollback to using the custom command `rollback` or if you wish to just rollback to a previous migration via `rollback_local`. Note in order to use the rollback feature with git the project must have a `.git` file present. 
 
 ### rollback command
-❯ python manage.py rollback -a polls -b feature/really-cool-feature
-* By default if no argument is specified for the branch `main` will be used. The arguemnt is specified via `-b`.
-* An app must be specified via the `-a` to indicate which app you wish to rollback. 
+    ❯ python manage.py rollback -a polls -b feature/really-cool-feature
+    * By default if no argument is specified for the branch `main` will be used. The arguemnt is specified via `-b`.
+    * An app must be specified via the `-a` to indicate which app you wish to rollback. 
 
 ### rollback_local
-❯ python manage.py rollback_local -a polls 
-* An app must be specified via the `-a` to indicate which app you wish to rollback. 
-* This will simply migrate back to the previous migration.
+    ❯ python manage.py rollback_local -a polls 
+    * An app must be specified via the `-a` to indicate which app you wish to rollback. 
+    * This will simply migrate back to the previous migration.
 
 ## Installing
 ### From GitHub

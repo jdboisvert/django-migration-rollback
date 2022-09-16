@@ -1,0 +1,13 @@
+black==22.3.0
+bumpver==2021.1114
+coverage==5.5
+isort==5.9.3
+pdoc3==0.10.0
+pydocstyle[toml]==6.1.1
+tox==3.24.3
+twine==3.4.2
+typed-ast==1.5.3
+watchdog==2.1.4
+wheel==0.36.2
+toml==0.10.2
+pre-commit==2.20.0python setup.py sdist

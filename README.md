@@ -4,16 +4,32 @@ A Django package used to just make the `python manage.py migrate` a little easie
 ## Features
 Able to set which branch in a git repository to rollback to using the custom command `migraterollback` or if you wish to just rollback to a previous migration only via `migrateprevious`. Note in order to use the rollback with a git repository's branch feature with git the project must have a `.git` file present.
 
-### Django migraterollback command
+### Django `migraterollback` command
     ❯ python manage.py migraterollback polls feature/really-cool-branch
+    Attempting to go back to rollback polls to latest migration on branch feature/really-cool-branch
+    Operations to perform:
+        Target specific migration: 0006_question5, from polls
+    Running migrations:
+        Rendering model states...
+    DONE
+        Unapplying polls.0007_question6...
+    OK
 
 This command is used to migrate a Django app back to the migration found in a repository's branch (this will also migrate to that migration if behind).
 
 * An app must be specified as the first argument after the command to indicate which app you wish to rollback.
 * By default if no argument is specified after the app, the branch `main` will be used.
 
-### Django migrateprevious
+### Django `migrateprevious` command
     ❯ python manage.py migrateprevious polls
+    Attempting to go back to rollback polls to previous migration
+    Operations to perform:
+        Target specific migration: 0005_question4, from polls
+    Running migrations:
+        Rendering model states...
+    DONE
+        Unapplying polls.0006_question5...
+    OK
 
 This command is used to migrate a Django app back to the previously applied migration.
 

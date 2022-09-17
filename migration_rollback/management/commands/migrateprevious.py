@@ -11,7 +11,7 @@ class Command(BaseCommand):
     help = "A way to rollback a Django app's migrations to the previous migration."
 
     def add_arguments(self, parser):
-        parser.add_argument("app", required=True, type=str, help="The app you wish to run the migrations against")
+        parser.add_argument("app", nargs="?", type=str, help="The app you wish to run the migrations against")
 
     def handle(self, *args, **options):
         app = options["app"]

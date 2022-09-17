@@ -10,8 +10,8 @@ class Command(BaseCommand):
     help = "A way to rollback a Django app's migrations to match a branch in a git repository."
 
     def add_arguments(self, parser):
-        parser.add_argument("app", required=True, type=str, help="The app you wish to run the migrations against")
-        parser.add_argument("branch", required=False, type=str, default="main", help="The git branch you wish to rollback to.")
+        parser.add_argument("app", nargs="?", type=str, help="The app you wish to run the migrations against")
+        parser.add_argument("branch", nargs="?", type=str, default="main", help="The git branch you wish to rollback to.")
 
     def handle(self, *args, **options):
         app = options["app"]

@@ -16,7 +16,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         app = options["app"]
 
-        self.stdout.write(self.style.SUCCESS(f"Attempting to go back to roll back {app} to previous migration"))
         self.stdout.write(self.style.MIGRATE_HEADING(f"Attempting to go back to roll back {app} to previous migration"))
 
         if not (previous_migration := get_previous_migration(app_name=app)):

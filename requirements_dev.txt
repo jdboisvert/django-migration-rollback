@@ -10,4 +10,5 @@ typed-ast==1.5.3
 watchdog==2.1.4
 wheel==0.36.2
 toml==0.10.2
-pre-commit==2.20.0python setup.py sdist
+pre-commit==2.20.0
+setuptools==63.2.0

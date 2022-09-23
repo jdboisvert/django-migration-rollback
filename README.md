@@ -37,11 +37,14 @@ This command is used to migrate a Django app back to the previously applied migr
 
 ## Installing
 ### From PyPi
-    ❯ pip install django-migration-rollback
+```
+pip install django-migration-rollback
+```
 
 ### From GitHub
-    ❯ pip install git+ssh://git@github.com/jdboisvert/django-migration-rollback
-
+```
+pip install git+ssh://git@github.com/jdboisvert/django-migration-rollback
+```
 
 ### Quick start
 Add "migration_rollback" to your INSTALLED_APPS in the `settings.py` like this:

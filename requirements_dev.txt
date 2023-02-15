@@ -8,7 +8,7 @@ tox==3.24.3
 twine==3.4.2
 typed-ast==1.5.3
 watchdog==2.1.4
-wheel==0.36.2
+wheel==0.38.1
 toml==0.10.2
 pre-commit==2.20.0
 setuptools==65.5.1

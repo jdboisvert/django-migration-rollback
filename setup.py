@@ -4,7 +4,7 @@ from pathlib import Path
 from setuptools import find_packages, setup
 
 GITHUB_URL = "https://github.com/jdboisvert/django-migration-rollback"
-VERSION = "1.0.1"
+VERSION = "1.0.2"
 
 
 def read(fname):
@@ -44,5 +44,6 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
     ],
 )

@@ -1,4 +1,4 @@
-# Django Migration Rollback
+# Django Migration Rollback v1.0.2
 A Django package used to just make the `python manage.py migrate` a little easier for Django apps that commit their migrations and want a way to rollback to a previous migration without needing to check what the which one it is via `python manage.py showmigrations` or in the project's git repository.
 
 ## Features
@@ -53,4 +53,33 @@ Add "migration_rollback" to your INSTALLED_APPS in the `settings.py` like this:
         ...
         'migration_rollback',
     ]
+```
+
+### Development
+
+## Getting started
+```bash
+# install pyenv (if necessary)
+brew install pyenv pyenv-virtualenv
+echo """
+export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+eval "$(pyenv init --path)"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+""" > ~/.zshrc
+source ~/.zshrc
+
+# create a virtualenv
+pyenv install 1.0.2
+pyenv virtualenv 1.0.2 django_migration_rollback
+pyenv activate django_migration_rollback
+
+# install dependencies
+pip install -U pip
+pip install -r requirements.txt -r requirements_dev.txt
+```
+
+## Installing pre-commit hooks
+```bash
+pre-commit install
 ```

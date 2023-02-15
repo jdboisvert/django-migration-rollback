@@ -3,19 +3,21 @@ profile = "black"
 multi_line_output = 3
 
 [tool.black]
-target-version = ["py38", "py39"]
+target-version = ["py38", "py39", "py310", "py311"]
 extend-exclude = '__pycache__'
 line-length = 140
 
 # Docs: https://gitlab.com/mbarkhau/pycalver
 [bumpver]
-current_version = "1.0.1"
+current_version = "1.0.2"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "[RELEASE] {new_version}"
 commit = true
-tag = true
-push = true
+tag = false
+push = false
 
 [bumpver.file_patterns]
 "VERSION" = ["{version}"]
 "pyproject.toml" = ['current_version = "{version}"']
+"README.md" = ["{version}"]
+"setup.py" = ['VERSION = "{version}"']

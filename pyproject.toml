@@ -20,4 +20,4 @@ push = false
 "VERSION" = ["{version}"]
 "pyproject.toml" = ['current_version = "{version}"']
 "README.md" = ["{version}"]
-"setup.py" = ['VERSION = "v{VERSION}"']
+"setup.py" = ['VERSION = "{version}"']

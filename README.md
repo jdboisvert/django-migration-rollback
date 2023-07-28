@@ -1,4 +1,4 @@
-# Django Migration Rollback v1.0.4
+# Django Migration Rollback v1.0.5
 A Django package used to just make the `python manage.py migrate` a little easier for Django apps that commit their migrations and want a way to rollback to a previous migration without needing to check what the which one it is via `python manage.py showmigrations` or in the project's git repository.
 
 ## Features
@@ -70,8 +70,8 @@ eval "$(pyenv virtualenv-init -)"
 source ~/.zshrc
 
 # create a virtualenv
-pyenv install 1.0.4
-pyenv virtualenv 1.0.4 django_migration_rollback
+pyenv install 3.10.5
+pyenv virtualenv 3.10.5 django_migration_rollback
 pyenv activate django_migration_rollback
 
 # install dependencies

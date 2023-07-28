@@ -23,7 +23,7 @@ def get_previous_migration(app_name: str) -> str:
     :param app_name: The name of the app to get the previous migration for
     :return: The previous migration number (ex: 0001 for 0001_initial.py)
     """
-    command = f"python manage.py showmigrations {app_name} | sort -r | grep '\[X\]' | head -2 | tail -1 | cut -d ' ' -f 3"
+    command = f"python manage.py showmigrations {app_name} 2>/dev/null | sort -r | grep '\[X\]' | head -2 | tail -1 | cut -d ' ' -f 3"
     command_pipe = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
 
     return command_pipe.stdout.read().decode("utf-8").split("_")[0]

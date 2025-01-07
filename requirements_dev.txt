@@ -11,4 +11,4 @@ watchdog==2.1.4
 wheel==0.38.1
 toml==0.10.2
 pre-commit==2.20.0
-setuptools==65.5.1
+setuptools==70.0.0

@@ -114,7 +114,7 @@ def test_migrateprevious_rolls_back_all_apps_when_no_app_given(remigrate_testapp
 
     with patch("migration_rollback.management.commands.migrateprevious.get_all_migrated_app_names") as mock_apps:
         mock_apps.return_value = ["testapp", "testapp2"]
-        call_command("migrateprevious", stdout=StringIO())
+        call_command("migrateprevious", "--yes", stdout=StringIO())
 
     assert "0001_initial" in _applied("testapp")
     assert "0002_author_bio" not in _applied("testapp")
@@ -136,7 +136,7 @@ def test_migraterollback_rolls_back_all_apps_when_no_app_given(remigrate_testapp
         mock_apps.return_value = ["testapp", "testapp2"]
         with patch("migration_rollback.management.commands.migraterollback.get_latest_migration_in_git") as mock_git:
             mock_git.return_value = "0001"
-            call_command("migraterollback", stdout=StringIO())
+            call_command("migraterollback", "--yes", stdout=StringIO())
 
     assert "0001_initial" in _applied("testapp")
     assert "0002_author_bio" not in _applied("testapp")

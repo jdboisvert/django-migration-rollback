@@ -18,7 +18,17 @@ class Command(BaseCommand):
         parser.add_argument(
             "--include-system-apps",
             action="store_true",
-            help="Include Django system apps (auth, admin, contenttypes, sessions) when rolling back all apps.",
+            help=(
+                "Include Django system apps (auth, admin, contenttypes, sessions) when rolling back all apps. "
+                "WARNING: system apps have cross-app dependencies that can cause unexpected cascading rollbacks. "
+                "Use with caution."
+            ),
+        )
+        parser.add_argument(
+            "--yes",
+            "-y",
+            action="store_true",
+            help="Skip the confirmation prompt when rolling back all apps. Useful for CI environments.",
         )
         parser.add_argument("--fake", action="store_true", help="Mark migrations as run without actually running them.")
         parser.add_argument(
@@ -30,6 +40,7 @@ class Command(BaseCommand):
         fake = options["fake"]
         fake_initial = options["fake_initial"]
         include_system_apps = options["include_system_apps"]
+        yes = options["yes"]
 
         if app:
             self._rollback_app(app, fake=fake, fake_initial=fake_initial)
@@ -37,6 +48,16 @@ class Command(BaseCommand):
             app_names = get_all_migrated_app_names(include_system_apps=include_system_apps)
             if not app_names:
                 raise CommandError("No apps with applied migrations were found.")
+
+            self.stdout.write(self.style.MIGRATE_HEADING("The following apps will be rolled back to their previous migration:"))
+            for app_name in app_names:
+                self.stdout.write(f"  - {app_name}")
+
+            if not yes:
+                confirm = input("\nAre you sure you want to continue? [y/N] ").strip().lower()
+                if confirm != "y":
+                    raise CommandError("Rollback cancelled.")
+
             self.stdout.write(self.style.MIGRATE_HEADING("Rolling back all apps to their previous migration"))
             for app_name in app_names:
                 self._rollback_app(app_name, fake=fake, fake_initial=fake_initial)

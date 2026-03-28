@@ -1,7 +1,24 @@
 from subprocess import STDOUT, Popen, PIPE
+from typing import List
 
 from django.db import connection
 from django.db.migrations.loader import MigrationLoader
+
+
+def get_all_migrated_app_names() -> List[str]:
+    """
+    Gets the names of all apps that have at least one applied migration.
+
+    :return: A list of app names with applied migrations
+    """
+    loader = MigrationLoader(connection)
+    seen = set()
+    app_names = []
+    for (app_label, _) in loader.applied_migrations:
+        if app_label not in seen:
+            seen.add(app_label)
+            app_names.append(app_label)
+    return app_names
 
 
 def get_latest_migration_in_git(app_name: str, branch_name: str) -> str:

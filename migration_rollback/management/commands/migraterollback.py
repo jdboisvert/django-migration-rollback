@@ -3,6 +3,7 @@ from django.core import management
 
 from migration_rollback.utils.migration_utils import (
     get_latest_migration_in_git,
+    get_all_migrated_app_names,
 )
 
 
@@ -10,7 +11,7 @@ class Command(BaseCommand):
     help = "A way to rollback a Django app's migrations to match a branch in a git repository."
 
     def add_arguments(self, parser):
-        parser.add_argument("app", nargs="?", type=str, help="The app you wish to run the migrations against")
+        parser.add_argument("app", nargs="?", type=str, help="The app you wish to run the migrations against. Omit to rollback all apps.")
         parser.add_argument("branch", nargs="?", type=str, default="main", help="The git branch you wish to rollback to.")
         parser.add_argument("--fake", action="store_true", help="Mark migrations as run without actually running them.")
         parser.add_argument("--fake-initial", action="store_true", help="Detect if tables already exist and fake-apply initial migrations if so.")
@@ -21,18 +22,28 @@ class Command(BaseCommand):
         fake = options["fake"]
         fake_initial = options["fake_initial"]
 
-        self.stdout.write(self.style.MIGRATE_HEADING(f"Attempting to go back to rollback {app} to latest migration on branch {branch}"))
+        if app:
+            self._rollback_app(app, branch, fake=fake, fake_initial=fake_initial)
+        else:
+            app_names = get_all_migrated_app_names()
+            if not app_names:
+                raise CommandError("No apps with applied migrations were found.")
+            self.stdout.write(self.style.MIGRATE_HEADING(f"Rolling back all apps to latest migration on branch {branch}"))
+            for app_name in app_names:
+                self._rollback_app(app_name, branch, fake=fake, fake_initial=fake_initial)
 
-        if branch:
-            if not (latest_migration_in_git := get_latest_migration_in_git(app_name=app, branch_name=branch)):
-                raise CommandError(f"Unable to rollback {app} to latest migration on branch {branch} since no migration was found.")
+    def _rollback_app(self, app: str, branch: str, fake: bool = False, fake_initial: bool = False):
+        self.stdout.write(self.style.MIGRATE_HEADING(f"Attempting to rollback {app} to latest migration on branch {branch}"))
 
-            management.call_command(
-                "migrate",
-                app,
-                latest_migration_in_git,
-                fake=fake,
-                fake_initial=fake_initial,
-                stdout=self.stdout,
-                stderr=self.stderr,
-            )
+        if not (latest_migration_in_git := get_latest_migration_in_git(app_name=app, branch_name=branch)):
+            raise CommandError(f"Unable to rollback {app} to latest migration on branch {branch} since no migration was found.")
+
+        management.call_command(
+            "migrate",
+            app,
+            latest_migration_in_git,
+            fake=fake,
+            fake_initial=fake_initial,
+            stdout=self.stdout,
+            stderr=self.stderr,
+        )

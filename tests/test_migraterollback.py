@@ -27,6 +27,39 @@ class MigrateRollbackCommandTest(TestCase):
 
         mock_get_migration.assert_called_once_with(app_name="myapp", branch_name="main")
 
+    @patch("migration_rollback.management.commands.migraterollback.management.call_command")
+    @patch("migration_rollback.management.commands.migraterollback.get_latest_migration_in_git")
+    def test_fake_flag_is_passed_to_migrate(self, mock_get_migration, mock_migrate):
+        mock_get_migration.return_value = "0002"
+
+        call_command("migraterollback", "myapp", "main", "--fake", stdout=StringIO())
+
+        _, kwargs = mock_migrate.call_args
+        assert kwargs["fake"] is True
+        assert kwargs["fake_initial"] is False
+
+    @patch("migration_rollback.management.commands.migraterollback.management.call_command")
+    @patch("migration_rollback.management.commands.migraterollback.get_latest_migration_in_git")
+    def test_fake_initial_flag_is_passed_to_migrate(self, mock_get_migration, mock_migrate):
+        mock_get_migration.return_value = "0002"
+
+        call_command("migraterollback", "myapp", "main", "--fake-initial", stdout=StringIO())
+
+        _, kwargs = mock_migrate.call_args
+        assert kwargs["fake"] is False
+        assert kwargs["fake_initial"] is True
+
+    @patch("migration_rollback.management.commands.migraterollback.management.call_command")
+    @patch("migration_rollback.management.commands.migraterollback.get_latest_migration_in_git")
+    def test_fake_flags_default_to_false(self, mock_get_migration, mock_migrate):
+        mock_get_migration.return_value = "0002"
+
+        call_command("migraterollback", "myapp", "main", stdout=StringIO())
+
+        _, kwargs = mock_migrate.call_args
+        assert kwargs["fake"] is False
+        assert kwargs["fake_initial"] is False
+
     @patch("migration_rollback.management.commands.migraterollback.get_latest_migration_in_git")
     def test_raises_error_when_no_migration_found(self, mock_get_migration):
         mock_get_migration.return_value = ""

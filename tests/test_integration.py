@@ -100,3 +100,43 @@ def test_migraterollback_fake_updates_migration_record_but_leaves_schema(remigra
 
     assert "0002_author_bio" not in _applied("testapp")
     assert "bio" in _table_columns("testapp_author")
+
+
+@pytest.mark.django_db(transaction=True)
+def test_migrateprevious_rolls_back_all_apps_when_no_app_given(remigrate_testapp):
+    """Omitting app rolls back every discovered app by one migration.
+
+    get_all_migrated_app_names is patched to return only testapp so Django's
+    built-in apps are not touched and the test DB teardown stays intact.
+    """
+    assert "0001_initial" in _applied("testapp")
+    assert "0002_author_bio" in _applied("testapp")
+
+    with patch("migration_rollback.management.commands.migrateprevious.get_all_migrated_app_names") as mock_apps:
+        mock_apps.return_value = ["testapp"]
+        call_command("migrateprevious", stdout=StringIO())
+
+    applied = _applied("testapp")
+    assert "0001_initial" in applied
+    assert "0002_author_bio" not in applied
+
+
+@pytest.mark.django_db(transaction=True)
+def test_migraterollback_rolls_back_all_apps_when_no_app_given(remigrate_testapp):
+    """Omitting app rolls back every discovered app to the git branch state.
+
+    get_all_migrated_app_names is patched to return only testapp so Django's
+    built-in apps are not touched and the test DB teardown stays intact.
+    """
+    assert "0001_initial" in _applied("testapp")
+    assert "0002_author_bio" in _applied("testapp")
+
+    with patch("migration_rollback.management.commands.migraterollback.get_all_migrated_app_names") as mock_apps:
+        mock_apps.return_value = ["testapp"]
+        with patch("migration_rollback.management.commands.migraterollback.get_latest_migration_in_git") as mock_git:
+            mock_git.return_value = "0001"
+            call_command("migraterollback", stdout=StringIO())
+
+    applied = _applied("testapp")
+    assert "0001_initial" in applied
+    assert "0002_author_bio" not in applied

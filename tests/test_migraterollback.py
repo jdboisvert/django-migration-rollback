@@ -60,6 +60,26 @@ class MigrateRollbackCommandTest(TestCase):
         assert kwargs["fake"] is False
         assert kwargs["fake_initial"] is False
 
+    @patch("migration_rollback.management.commands.migraterollback.management.call_command")
+    @patch("migration_rollback.management.commands.migraterollback.get_latest_migration_in_git")
+    @patch("migration_rollback.management.commands.migraterollback.get_all_migrated_app_names")
+    def test_rolls_back_all_apps_when_no_app_given(self, mock_get_apps, mock_get_migration, mock_migrate):
+        mock_get_apps.return_value = ["app1", "app2"]
+        mock_get_migration.side_effect = ["0001", "0003"]
+
+        call_command("migraterollback", stdout=StringIO())
+
+        assert mock_migrate.call_count == 2
+        assert mock_migrate.call_args_list[0][0] == ("migrate", "app1", "0001")
+        assert mock_migrate.call_args_list[1][0] == ("migrate", "app2", "0003")
+
+    @patch("migration_rollback.management.commands.migraterollback.get_all_migrated_app_names")
+    def test_raises_error_when_no_apps_found(self, mock_get_apps):
+        mock_get_apps.return_value = []
+
+        with self.assertRaises(CommandError):
+            call_command("migraterollback", stdout=StringIO())
+
     @patch("migration_rollback.management.commands.migraterollback.get_latest_migration_in_git")
     def test_raises_error_when_no_migration_found(self, mock_get_migration):
         mock_get_migration.return_value = ""

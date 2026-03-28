@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, patch
 
 from migration_rollback.utils.migration_utils import (
+    get_all_migrated_app_names,
     get_latest_migration_in_git,
     get_previous_migration,
 )
@@ -11,6 +12,46 @@ def _mock_popen(output: bytes) -> MagicMock:
     mock_pipe = MagicMock()
     mock_pipe.stdout.read.return_value = output
     return mock_pipe
+
+
+class TestGetAllMigratedAppNames:
+    @patch("migration_rollback.utils.migration_utils.MigrationLoader")
+    def test_returns_apps_with_applied_migrations(self, mock_loader_class):
+        mock_loader = MagicMock()
+        mock_loader.applied_migrations = {
+            ("myapp", "0001_initial"): None,
+            ("myapp", "0002_add_field"): None,
+            ("otherapp", "0001_initial"): None,
+        }
+        mock_loader_class.return_value = mock_loader
+
+        result = get_all_migrated_app_names()
+
+        assert set(result) == {"myapp", "otherapp"}
+
+    @patch("migration_rollback.utils.migration_utils.MigrationLoader")
+    def test_returns_each_app_only_once(self, mock_loader_class):
+        mock_loader = MagicMock()
+        mock_loader.applied_migrations = {
+            ("myapp", "0001_initial"): None,
+            ("myapp", "0002_add_field"): None,
+            ("myapp", "0003_another"): None,
+        }
+        mock_loader_class.return_value = mock_loader
+
+        result = get_all_migrated_app_names()
+
+        assert result.count("myapp") == 1
+
+    @patch("migration_rollback.utils.migration_utils.MigrationLoader")
+    def test_returns_empty_list_when_no_migrations_applied(self, mock_loader_class):
+        mock_loader = MagicMock()
+        mock_loader.applied_migrations = {}
+        mock_loader_class.return_value = mock_loader
+
+        result = get_all_migrated_app_names()
+
+        assert result == []
 
 
 class TestGetLatestMigrationInGit:

@@ -3,6 +3,7 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "migration_rollback",
     "tests.testapp",
+    "tests.testapp2",
 ]
 
 DATABASES = {

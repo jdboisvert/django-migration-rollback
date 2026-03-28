@@ -4,11 +4,15 @@ from typing import List
 from django.db import connection
 from django.db.migrations.loader import MigrationLoader
 
+DJANGO_SYSTEM_APPS = frozenset(["admin", "auth", "contenttypes", "sessions"])
 
-def get_all_migrated_app_names() -> List[str]:
+
+def get_all_migrated_app_names(include_system_apps: bool = False) -> List[str]:
     """
     Gets the names of all apps that have at least one applied migration.
 
+    :param include_system_apps: Include Django system apps (auth, admin, contenttypes, sessions).
+                                Defaults to False so rollback-all does not accidentally touch them.
     :return: A list of app names with applied migrations
     """
     loader = MigrationLoader(connection)
@@ -17,7 +21,8 @@ def get_all_migrated_app_names() -> List[str]:
     for (app_label, _) in loader.applied_migrations:
         if app_label not in seen:
             seen.add(app_label)
-            app_names.append(app_label)
+            if include_system_apps or app_label not in DJANGO_SYSTEM_APPS:
+                app_names.append(app_label)
     return app_names
 
 
@@ -44,11 +49,7 @@ def get_previous_migration(app_name: str) -> str:
     :return: The previous migration number (ex: 0001 for 0001_initial.py)
     """
     loader = MigrationLoader(connection)
-    applied = sorted(
-        migration_name
-        for (app_label, migration_name) in loader.applied_migrations
-        if app_label == app_name
-    )
+    applied = sorted(migration_name for (app_label, migration_name) in loader.applied_migrations if app_label == app_name)
 
     if len(applied) < 2:
         return ""

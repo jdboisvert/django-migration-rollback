@@ -12,19 +12,28 @@ class Command(BaseCommand):
     help = "A way to rollback a Django app's migrations to the previous migration."
 
     def add_arguments(self, parser):
-        parser.add_argument("app", nargs="?", type=str, help="The app you wish to run the migrations against. Omit to rollback all apps.")
+        parser.add_argument("apps", nargs="*", type=str, help="One or more apps to rollback. Omit to rollback all non-system apps.")
+        parser.add_argument(
+            "--include-system-apps",
+            action="store_true",
+            help="Include Django system apps (auth, admin, contenttypes, sessions) when rolling back all apps.",
+        )
         parser.add_argument("--fake", action="store_true", help="Mark migrations as run without actually running them.")
-        parser.add_argument("--fake-initial", action="store_true", help="Detect if tables already exist and fake-apply initial migrations if so.")
+        parser.add_argument(
+            "--fake-initial", action="store_true", help="Detect if tables already exist and fake-apply initial migrations if so."
+        )
 
     def handle(self, *args, **options):
-        app = options["app"]
+        apps = options["apps"]
         fake = options["fake"]
         fake_initial = options["fake_initial"]
+        include_system_apps = options["include_system_apps"]
 
-        if app:
-            self._rollback_app(app, fake=fake, fake_initial=fake_initial)
+        if apps:
+            for app in apps:
+                self._rollback_app(app, fake=fake, fake_initial=fake_initial)
         else:
-            app_names = get_all_migrated_app_names()
+            app_names = get_all_migrated_app_names(include_system_apps=include_system_apps)
             if not app_names:
                 raise CommandError("No apps with applied migrations were found.")
             self.stdout.write(self.style.MIGRATE_HEADING("Rolling back all apps to their previous migration"))

@@ -53,6 +53,35 @@ class TestGetAllMigratedAppNames:
 
         assert result == []
 
+    @patch("migration_rollback.utils.migration_utils.MigrationLoader")
+    def test_excludes_system_apps_by_default(self, mock_loader_class):
+        mock_loader = MagicMock()
+        mock_loader.applied_migrations = {
+            ("myapp", "0001_initial"): None,
+            ("auth", "0001_initial"): None,
+            ("contenttypes", "0001_initial"): None,
+            ("sessions", "0001_initial"): None,
+            ("admin", "0001_initial"): None,
+        }
+        mock_loader_class.return_value = mock_loader
+
+        result = get_all_migrated_app_names()
+
+        assert result == ["myapp"]
+
+    @patch("migration_rollback.utils.migration_utils.MigrationLoader")
+    def test_includes_system_apps_when_requested(self, mock_loader_class):
+        mock_loader = MagicMock()
+        mock_loader.applied_migrations = {
+            ("myapp", "0001_initial"): None,
+            ("auth", "0001_initial"): None,
+        }
+        mock_loader_class.return_value = mock_loader
+
+        result = get_all_migrated_app_names(include_system_apps=True)
+
+        assert set(result) == {"myapp", "auth"}
+
 
 class TestGetLatestMigrationInGit:
     @patch("migration_rollback.utils.migration_utils.Popen")

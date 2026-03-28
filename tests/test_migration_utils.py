@@ -1,7 +1,5 @@
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from migration_rollback.utils.migration_utils import (
     get_latest_migration_in_git,
     get_previous_migration,
@@ -44,27 +42,50 @@ class TestGetLatestMigrationInGit:
 
 
 class TestGetPreviousMigration:
-    @patch("migration_rollback.utils.migration_utils.Popen")
-    def test_returns_migration_number(self, mock_popen):
-        mock_popen.return_value = _mock_popen(b"0002_some_change\n")
+    @patch("migration_rollback.utils.migration_utils.MigrationLoader")
+    def test_returns_previous_migration_number(self, mock_loader_class):
+        mock_loader = MagicMock()
+        mock_loader.applied_migrations = {
+            ("myapp", "0001_initial"): None,
+            ("myapp", "0002_add_field"): None,
+        }
+        mock_loader_class.return_value = mock_loader
 
         result = get_previous_migration(app_name="myapp")
 
-        assert result == "0002"
+        assert result == "0001"
 
-    @patch("migration_rollback.utils.migration_utils.Popen")
-    def test_returns_empty_string_when_no_migration_found(self, mock_popen):
-        mock_popen.return_value = _mock_popen(b"")
+    @patch("migration_rollback.utils.migration_utils.MigrationLoader")
+    def test_returns_empty_string_when_only_one_migration_applied(self, mock_loader_class):
+        mock_loader = MagicMock()
+        mock_loader.applied_migrations = {("myapp", "0001_initial"): None}
+        mock_loader_class.return_value = mock_loader
 
         result = get_previous_migration(app_name="myapp")
 
         assert result == ""
 
-    @patch("migration_rollback.utils.migration_utils.Popen")
-    def test_passes_app_name_to_command(self, mock_popen):
-        mock_popen.return_value = _mock_popen(b"0001_initial\n")
+    @patch("migration_rollback.utils.migration_utils.MigrationLoader")
+    def test_returns_empty_string_when_no_migrations_applied(self, mock_loader_class):
+        mock_loader = MagicMock()
+        mock_loader.applied_migrations = {}
+        mock_loader_class.return_value = mock_loader
 
-        get_previous_migration(app_name="myapp")
+        result = get_previous_migration(app_name="myapp")
 
-        command = mock_popen.call_args[0][0]
-        assert "myapp" in command
+        assert result == ""
+
+    @patch("migration_rollback.utils.migration_utils.MigrationLoader")
+    def test_filters_by_app_name(self, mock_loader_class):
+        mock_loader = MagicMock()
+        mock_loader.applied_migrations = {
+            ("myapp", "0001_initial"): None,
+            ("myapp", "0002_add_field"): None,
+            ("otherapp", "0001_initial"): None,
+            ("otherapp", "0002_something"): None,
+        }
+        mock_loader_class.return_value = mock_loader
+
+        result = get_previous_migration(app_name="myapp")
+
+        assert result == "0001"

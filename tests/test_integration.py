@@ -53,7 +53,7 @@ def test_migraterollback_rolls_back_to_specified_migration(remigrate_testapp):
 
     with patch("migration_rollback.management.commands.migraterollback.get_latest_migration_in_git") as mock_git:
         mock_git.return_value = "0001"
-        call_command("migraterollback", "testapp", branch="main", stdout=StringIO())
+        call_command("migraterollback", "testapp", "main", stdout=StringIO())
 
     applied = _applied("testapp")
     assert "0001_initial" in applied
@@ -67,7 +67,7 @@ def test_migraterollback_raises_when_git_returns_no_migration():
         mock_git.return_value = ""
 
         with pytest.raises(CommandError):
-            call_command("migraterollback", "testapp", branch="main", stdout=StringIO())
+            call_command("migraterollback", "testapp", "main", stdout=StringIO())
 
 
 def _table_columns(table_name: str) -> set:
@@ -96,7 +96,7 @@ def test_migraterollback_fake_updates_migration_record_but_leaves_schema(remigra
 
     with patch("migration_rollback.management.commands.migraterollback.get_latest_migration_in_git") as mock_git:
         mock_git.return_value = "0001"
-        call_command("migraterollback", "testapp", "--fake", branch="main", stdout=StringIO())
+        call_command("migraterollback", "testapp", "--fake", stdout=StringIO())
 
     assert "0002_author_bio" not in _applied("testapp")
     assert "bio" in _table_columns("testapp_author")
@@ -136,7 +136,7 @@ def test_migraterollback_rolls_back_all_apps_when_no_app_given(remigrate_testapp
         mock_apps.return_value = ["testapp", "testapp2"]
         with patch("migration_rollback.management.commands.migraterollback.get_latest_migration_in_git") as mock_git:
             mock_git.return_value = "0001"
-            call_command("migraterollback", branch="main", stdout=StringIO())
+            call_command("migraterollback", stdout=StringIO())
 
     assert "0001_initial" in _applied("testapp")
     assert "0002_author_bio" not in _applied("testapp")

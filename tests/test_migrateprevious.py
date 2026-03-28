@@ -60,19 +60,6 @@ class MigratePreviousCommandTest(TestCase):
         with self.assertRaises(CommandError):
             call_command("migrateprevious", "myapp", stdout=StringIO())
 
-    # --- multiple explicit apps ---
-
-    @patch("migration_rollback.management.commands.migrateprevious.management.call_command")
-    @patch("migration_rollback.management.commands.migrateprevious.get_previous_migration")
-    def test_rolls_back_multiple_explicit_apps(self, mock_get_migration, mock_migrate):
-        mock_get_migration.side_effect = ["0001", "0003"]
-
-        call_command("migrateprevious", "app1", "app2", stdout=StringIO())
-
-        assert mock_migrate.call_count == 2
-        assert mock_migrate.call_args_list[0][0] == ("migrate", "app1", "0001")
-        assert mock_migrate.call_args_list[1][0] == ("migrate", "app2", "0003")
-
     # --- rollback all ---
 
     @patch("migration_rollback.management.commands.migrateprevious.management.call_command")

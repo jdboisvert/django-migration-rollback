@@ -68,3 +68,35 @@ def test_migraterollback_raises_when_git_returns_no_migration():
 
         with pytest.raises(CommandError):
             call_command("migraterollback", "testapp", "main", stdout=StringIO())
+
+
+def _table_columns(table_name: str) -> set:
+    """Return the set of column names for a table in the current DB."""
+    with connection.cursor() as cursor:
+        return {col.name for col in connection.introspection.get_table_description(cursor, table_name)}
+
+
+@pytest.mark.django_db(transaction=True)
+def test_migrateprevious_fake_updates_migration_record_but_leaves_schema(remigrate_testapp):
+    """--fake marks 0002 as unapplied but does not drop the bio column from the DB."""
+    assert "0002_author_bio" in _applied("testapp")
+    assert "bio" in _table_columns("testapp_author")
+
+    call_command("migrateprevious", "testapp", "--fake", stdout=StringIO())
+
+    assert "0002_author_bio" not in _applied("testapp")
+    assert "bio" in _table_columns("testapp_author")
+
+
+@pytest.mark.django_db(transaction=True)
+def test_migraterollback_fake_updates_migration_record_but_leaves_schema(remigrate_testapp):
+    """--fake marks 0002 as unapplied but does not drop the bio column from the DB."""
+    assert "0002_author_bio" in _applied("testapp")
+    assert "bio" in _table_columns("testapp_author")
+
+    with patch("migration_rollback.management.commands.migraterollback.get_latest_migration_in_git") as mock_git:
+        mock_git.return_value = "0001"
+        call_command("migraterollback", "testapp", "main", "--fake", stdout=StringIO())
+
+    assert "0002_author_bio" not in _applied("testapp")
+    assert "bio" in _table_columns("testapp_author")

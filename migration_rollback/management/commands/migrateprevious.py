@@ -12,9 +12,13 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("app", nargs="?", type=str, help="The app you wish to run the migrations against")
+        parser.add_argument("--fake", action="store_true", help="Mark migrations as run without actually running them.")
+        parser.add_argument("--fake-initial", action="store_true", help="Detect if tables already exist and fake-apply initial migrations if so.")
 
     def handle(self, *args, **options):
         app = options["app"]
+        fake = options["fake"]
+        fake_initial = options["fake_initial"]
 
         self.stdout.write(self.style.MIGRATE_HEADING(f"Attempting to go back to rollback {app} to previous migration"))
 
@@ -25,6 +29,8 @@ class Command(BaseCommand):
             "migrate",
             app,
             previous_migration,
+            fake=fake,
+            fake_initial=fake_initial,
             stdout=self.stdout,
             stderr=self.stderr,
         )

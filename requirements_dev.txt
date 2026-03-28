@@ -12,3 +12,5 @@ wheel==0.38.1
 toml==0.10.2
 pre-commit==2.20.0
 setuptools==70.0.0
+pytest==8.1.1
+pytest-django==4.8.0

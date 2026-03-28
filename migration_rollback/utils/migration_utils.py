@@ -1,5 +1,8 @@
 from subprocess import STDOUT, Popen, PIPE
 
+from django.db import connection
+from django.db.migrations.loader import MigrationLoader
+
 
 def get_latest_migration_in_git(app_name: str, branch_name: str) -> str:
     """
@@ -18,12 +21,19 @@ def get_latest_migration_in_git(app_name: str, branch_name: str) -> str:
 
 def get_previous_migration(app_name: str) -> str:
     """
-    Gets the previous migration present in an app's migration directory in the database
+    Gets the previous applied migration for an app from the database.
 
     :param app_name: The name of the app to get the previous migration for
     :return: The previous migration number (ex: 0001 for 0001_initial.py)
     """
-    command = f"python manage.py showmigrations {app_name} 2>/dev/null | sort -r | grep '\[X\]' | head -2 | tail -1 | cut -d ' ' -f 3"
-    command_pipe = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
+    loader = MigrationLoader(connection)
+    applied = sorted(
+        migration_name
+        for (app_label, migration_name) in loader.applied_migrations
+        if app_label == app_name
+    )
 
-    return command_pipe.stdout.read().decode("utf-8").split("_")[0]
+    if len(applied) < 2:
+        return ""
+
+    return applied[-2].split("_")[0]

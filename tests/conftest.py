@@ -11,3 +11,4 @@ def remigrate_testapp():
     """
     yield
     call_command("migrate", "testapp", verbosity=0)
+    call_command("migrate", "testapp2", verbosity=0)

@@ -1,3 +1,4 @@
+import pytest
 from unittest.mock import MagicMock, patch
 
 from migration_rollback.utils.migration_utils import (
@@ -84,6 +85,22 @@ class TestGetAllMigratedAppNames:
 
 
 class TestGetLatestMigrationInGit:
+    @patch("migration_rollback.utils.migration_utils.Popen")
+    def test_strips_trailing_newline_from_result(self, mock_popen):
+        mock_popen.return_value = _mock_popen(b"\n")
+
+        result = get_latest_migration_in_git(app_name="myapp", branch_name="main")
+
+        assert result == ""
+
+    def test_raises_on_unsafe_app_name(self):
+        with pytest.raises(ValueError, match="Invalid app_name"):
+            get_latest_migration_in_git(app_name="my app; rm -rf /", branch_name="main")
+
+    def test_raises_on_unsafe_branch_name(self):
+        with pytest.raises(ValueError, match="Invalid branch_name"):
+            get_latest_migration_in_git(app_name="myapp", branch_name="main; rm -rf /")
+
     @patch("migration_rollback.utils.migration_utils.Popen")
     def test_returns_migration_number(self, mock_popen):
         mock_popen.return_value = _mock_popen(b"0003_add_field\n")

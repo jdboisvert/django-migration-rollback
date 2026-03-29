@@ -43,6 +43,9 @@ class Command(BaseCommand):
         include_system_apps = options["include_system_apps"]
         yes = options["yes"]
 
+        if not branch:
+            raise CommandError("A branch name is required.")
+
         if app:
             self._rollback_app(app, branch, fake=fake, fake_initial=fake_initial)
         else:

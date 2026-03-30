@@ -69,6 +69,10 @@ class MigrateRollbackCommandTest(TestCase):
         with self.assertRaises(CommandError):
             call_command("migraterollback", "myapp", "main", stdout=StringIO())
 
+    def test_raises_error_when_branch_is_empty_string(self):
+        with self.assertRaises(CommandError, msg="A branch name is required."):
+            call_command("migraterollback", "myapp", "", stdout=StringIO())
+
     # --- rollback all ---
 
     @patch("migration_rollback.management.commands.migraterollback.management.call_command")

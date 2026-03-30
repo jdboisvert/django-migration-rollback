@@ -70,8 +70,8 @@ eval "$(pyenv virtualenv-init -)"
 source ~/.zshrc
 
 # create a virtualenv
-pyenv install 1.1.0
-pyenv virtualenv 1.1.0 django_migration_rollback
+pyenv install 3.11.0
+pyenv virtualenv 3.11.0 django_migration_rollback
 pyenv activate django_migration_rollback
 
 # install dependencies

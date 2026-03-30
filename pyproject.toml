@@ -19,5 +19,5 @@ push = false
 [bumpver.file_patterns]
 "VERSION" = ["{version}"]
 "pyproject.toml" = ['current_version = "{version}"']
-"README.md" = ["{version}"]
+"README.md" = ["Django Migration Rollback v{version}"]
 "setup.py" = ['VERSION = "{version}"']

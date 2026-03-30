@@ -9,7 +9,7 @@ line-length = 140
 
 # Docs: https://gitlab.com/mbarkhau/pycalver
 [bumpver]
-current_version = "1.1.0"
+current_version = "2.0.0"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "[RELEASE] {new_version}"
 commit = true
@@ -19,5 +19,5 @@ push = false
 [bumpver.file_patterns]
 "VERSION" = ["{version}"]
 "pyproject.toml" = ['current_version = "{version}"']
-"README.md" = ["{version}"]
+"README.md" = ["Django Migration Rollback v{version}"]
 "setup.py" = ['VERSION = "{version}"']

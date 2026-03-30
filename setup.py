@@ -4,7 +4,7 @@ from pathlib import Path
 from setuptools import find_packages, setup
 
 GITHUB_URL = "https://github.com/jdboisvert/django-migration-rollback"
-VERSION = "1.1.0"
+VERSION = "2.0.0"
 
 
 def read(fname):

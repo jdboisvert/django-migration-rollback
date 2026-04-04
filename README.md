@@ -1,4 +1,4 @@
-# Django Migration Rollback v1.1.0
+# Django Migration Rollback v2.0.0
 A Django package used to just make the `python manage.py migrate` a little easier for Django apps that commit their migrations and want a way to rollback to a previous migration without needing to check what the which one it is via `python manage.py showmigrations` or in the project's git repository.
 
 ## Features
